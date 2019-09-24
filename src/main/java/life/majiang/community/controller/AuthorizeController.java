@@ -5,6 +5,7 @@ import life.majiang.community.dto.GithubUser;
 import life.majiang.community.mapper.UserMapper;
 import life.majiang.community.model.User;
 import life.majiang.community.provider.GithubProvider;
+import life.majiang.community.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -28,6 +29,8 @@ public class AuthorizeController {
     private String clientUri;
     @Autowired
     private UserMapper userMapper;
+    @Autowired
+    private UserService userService;
     @GetMapping("/callback")
     public String callback(@RequestParam(name ="code") String code,
                             @RequestParam(name="state") String state,
@@ -45,11 +48,13 @@ public class AuthorizeController {
             String token= UUID.randomUUID().toString();
             user.setToken(token);
             user.setUsername(githubUser.getName());
-            user.setId(githubUser.getId());
+            user.setAccountId(githubUser.getId());
             user.setGmtCreate(System.currentTimeMillis());
             user.setGmtModified(user.getGmtCreate());
             user.setAvatarUrl(githubUser.getAvatar_url());
-            userMapper.insert(user);
+            //不改变id的情况下创建或者更新token
+            userService.createOrUpdate(user);
+            //userMapper.insert(user);
             //自动写入cookie
             response.addCookie(new Cookie("token", token));
             //登陆成功,写cookie和session
