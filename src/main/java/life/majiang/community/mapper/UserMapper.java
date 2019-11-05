@@ -18,6 +18,6 @@ public interface UserMapper {
     @Select("SELECT * from user WHERE accountId=#{accountId}")
     User findByAccountId(@Param("accountId")String accountId);
 
-    @Update("UPDATE user SET name=*{name},token=#{token},gmt_modified=#{gmtModified},avatar_url=#{avatarUrl} WHERE id=#{id}")
+    @Update("UPDATE user SET username=#{username},token=#{token},gmt_modified=#{gmtModified},avatar_url=#{avatarUrl} WHERE id=#{id}")
     void update(User user);
 }
